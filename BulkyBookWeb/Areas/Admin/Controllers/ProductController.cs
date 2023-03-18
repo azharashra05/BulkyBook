@@ -19,49 +19,28 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View(objCoverTypeList);
         }
 
-        public IActionResult Create()
+        
+        //Get
+        public IActionResult Upsert(int? id)
         {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(CoverType coverType)
-        {
-            if (coverType.Name.Length <= 3)
-            {
-                ModelState.AddModelError("name", "The CoverType should be minimum length 3");
-            }
-            if (ModelState.IsValid)
-            {
-                _db.CoverType.Add(coverType);
-                _db.Save();
-                TempData["success"] = "CoverType created successfully";
-                return RedirectToAction("Index");
-            }
-            return View(coverType);
-
-        }
-
-        public IActionResult Edit(int? id)
-        {
+            Product product = new Product();
             if (id == null || id == 0)
             {
-                return NotFound();
+                //create 
+                return View(product);
             }
-            var coverTypeFromDb = _db.CoverType.GetFirstOrDefault(u => u.Id == id);
-            //var categoryFromDbFirst=_db.Categories.FirstOrDefault(x=> x.Id == id);
-            //var catefryFromDbSingle=_db.Categories.SingleOrDefault(x=> x.Id == id);
-            if (coverTypeFromDb == null)
+            else
             {
-                return NotFound();
+                //update product
             }
-            return View(coverTypeFromDb);
+           
+            return View(product);
         }
 
+        //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CoverType coverType)
+        public IActionResult Upsert(CoverType coverType)
         {
             if (coverType.Name.Length <=3)
             {
