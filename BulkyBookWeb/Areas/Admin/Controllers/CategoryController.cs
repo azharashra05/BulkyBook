@@ -3,8 +3,9 @@ using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BulkyBookWeb.Controllers
+namespace BulkyBookWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _db;
@@ -40,19 +41,19 @@ namespace BulkyBookWeb.Controllers
                 return RedirectToAction("Index");
             }
             return View(category);
-            
+
         }
 
         public IActionResult Edit(int? id)
         {
-            if(id==null || id == 0)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
-            var categoryFromDb = _db.Category.GetFirstOrDefault(u=>u.Id==id);
+            var categoryFromDb = _db.Category.GetFirstOrDefault(u => u.Id == id);
             //var categoryFromDbFirst=_db.Categories.FirstOrDefault(x=> x.Id == id);
             //var catefryFromDbSingle=_db.Categories.SingleOrDefault(x=> x.Id == id);
-            if(categoryFromDb == null)
+            if (categoryFromDb == null)
             {
                 return NotFound();
             }
@@ -84,7 +85,7 @@ namespace BulkyBookWeb.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = _db.Category.GetFirstOrDefault(u=>u.Id == id);
+            var categoryFromDb = _db.Category.GetFirstOrDefault(u => u.Id == id);
             //var categoryFromDbFirst=_db.Categories.FirstOrDefault(x=> x.Id == id);
             //var catefryFromDbSingle=_db.Categories.SingleOrDefault(x=> x.Id == id);
             if (categoryFromDb == null)
