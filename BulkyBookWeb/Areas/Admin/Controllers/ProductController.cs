@@ -1,21 +1,22 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductController : Controller
     {
-        private readonly IUnitOfWork _db;
-        public ProductController(IUnitOfWork db)
+        private readonly IUnitOfWork _unitOfWork;
+        public ProductController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<CoverType> objCoverTypeList = _db.CoverType.GetAll();
+            IEnumerable<CoverType> objCoverTypeList = _unitOfWork.CoverType.GetAll();
             return View(objCoverTypeList);
         }
 
@@ -24,9 +25,21 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         public IActionResult Upsert(int? id)
         {
             Product product = new Product();
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u=>new SelectListItem
+            {
+                Text = u.Name,
+                Value=u.Id.ToString()
+            } );
+            IEnumerable<SelectListItem> CoverTypeList = _unitOfWork.CoverType.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
             if (id == null || id == 0)
             {
                 //create 
+                ViewBag.CategoryList = CategoryList;
+                ViewBag.CoverTypeList=CoverTypeList;
                 return View(product);
             }
             else
@@ -48,8 +61,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.CoverType.Update(coverType);
-                _db.Save();
+                _unitOfWork.CoverType.Update(coverType);
+                _unitOfWork.Save();
                 TempData["success"] = "CoverType updated successfully";
                 return RedirectToAction("Index");
             }
@@ -63,7 +76,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var coverTypeFromDb = _db.CoverType.GetFirstOrDefault(u => u.Id == id);
+            var coverTypeFromDb = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
             //var categoryFromDbFirst=_db.Categories.FirstOrDefault(x=> x.Id == id);
             //var catefryFromDbSingle=_db.Categories.SingleOrDefault(x=> x.Id == id);
             if (coverTypeFromDb == null)
@@ -77,8 +90,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(CoverType coverType)
         {
-            _db.CoverType.Remove(coverType);
-            _db.Save();
+            _unitOfWork.CoverType.Remove(coverType);
+            _unitOfWork.Save();
             TempData["success"] = "CoverType deleted successfully";
             return RedirectToAction("Index");
 
